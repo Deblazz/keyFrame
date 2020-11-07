@@ -64,13 +64,15 @@ class SerialPort(object):
         os.write(self.fd, chr(byte))
 
 def main():
-    mystring = " "
-    b = bytes(mystring, 'utf-8')
-    port = "/dev/ttyACM1"
+    port = "/dev/ttyACM0"
     bps = 115200
     port = SerialPort(port, bps)
-    with open("../../../pizza.jpg", "rb") as img:
-        send = base64.b64encode(img.read())
+
+    # with open("../../../img.jpeg", "rb") as f:
+    #     send = base64.b64encode(f.read())
+
+    with open("../../../helloworld.txt", "rb") as f:
+        send = base64.b64encode(f.read())
 
     #print(send.decode('utf-8'))
     port.write(send)
