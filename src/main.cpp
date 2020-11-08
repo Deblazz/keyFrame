@@ -1,74 +1,69 @@
-#include <Arduino.h>
-#include <Keyboard.h>
 #include <SPI.h>
 #include <SD.h>
+#include <Keyboard.h>
 
-//String baseNomeFile = "file";
-//File myFile = SD.open(baseNomeFile);
-int fileC = 0;
 const int pulsante = 8;
+const int sd = 10;
 int ultimoStatoPulsante;
 int statoPulsanteAttuale;
-const int chipSelect = 10;
-char carattere;
-
-String baseNomeFile = "file.txt";
-File myFile = SD.open(baseNomeFile, FILE_WRITE);
+File myFile;
+char lettura;
 
 void setup() {
-  // put your setup code here, to run once:
-  pinMode(chipSelect, OUTPUT);
+  Serial.begin(9600);
+  //while(!Serial){;}
+  
   pinMode(pulsante, INPUT);
-
-  Serial.begin(115200);
-
-  if(!SD.begin(chipSelect)){
-    Serial.println("Sei un fallimento");
-    return;
+  statoPulsanteAttuale = digitalRead(pulsante);
+  SD.begin(sd);
+  
+  myFile = SD.open("happy.txt", FILE_READ);
+  if(myFile){
+    delay(1000);
+    /*Apertura Bash e avvio di NANO*/
+    Keyboard.press(KEY_LEFT_CTRL);
+    Keyboard.press(KEY_LEFT_ALT);
+    Keyboard.write('t');
+    Keyboard.releaseAll(); 
+    delay(2000);
+    Keyboard.print("setxkbmap us");
+    Keyboard.write(KEY_RETURN);
+    delay(1000);
+    Keyboard.print("rm hap.py");
+    Keyboard.write(KEY_RETURN);
+    delay(1000);
+    Keyboard.print("nano");
+    Keyboard.write(KEY_RETURN); 
+    
+    /*Scrittura a NANO*/
+    while(myFile.available()){
+      lettura = myFile.read();
+      Keyboard.write(lettura);
+    }
+    myFile.close();
+    
+    /*Salvataggio file*/
+    Keyboard.press(KEY_LEFT_CTRL);
+    Keyboard.write('o');
+    Keyboard.releaseAll();
+    Keyboard.print("hap.py");
+    Keyboard.write(KEY_RETURN);
+    Keyboard.press(KEY_LEFT_CTRL);
+    Keyboard.write('x');
+    Keyboard.releaseAll(); 
+    delay(500);
+    /*RUN FILE DA COMMAND*/
+    Keyboard.print("python3 hap.py");
+    Keyboard.write(KEY_RETURN);
+    /*Keyboard.print("setxkbmap it");
+    Keyboard.write(KEY_RETURN);*/
   }
-
-  //statoPulsanteAttuale = digitalRead(pulsante);
-  Keyboard.begin();
-
-  myFile.print("Hello World!");
-  myFile.close();
+  else{
+    Serial.println("Errore");
+    myFile.close();
+  }
 
 }
 
-void loop(){
-  
-  // put your main code here, to run repeatedly:
-  // ultimoStatoPulsante = statoPulsanteAttuale;
-  // statoPulsanteAttuale = digitalRead(pulsante);
-
-  // if(ultimoStatoPulsante == HIGH && statoPulsanteAttuale == LOW){
-
-  //   Keyboard.press(KEY_LEFT_CTRL);
-  //   delay(50);
-  //   Keyboard.press(KEY_LEFT_ALT);
-  //   delay(50);
-  //   Keyboard.write('t');
-  //   delay(1000);
-  //   Keyboard.releaseAll();
-  //Serial.println(Serial.read());
-  // }
-
-  // if(Serial.read()) {
-  // baseNomeFile = baseNomeFile.concat(fileC);
-  // baseNomeFile = baseNomeFile.concat(".txt");
-  // myFile.close();
-  // myFile = SD.open(baseNomeFile, FILE_WRITE);
-  // fileC++;
-  // //delay(100);
-  // }
-
-
-
-
-  // while(carattere = Serial.read() == true){
-  //   myFile.write(carattere);
-  //   //Keyboard.write(carattere);
-  // }
-  // myFile.close();
-
+void loop() {
 }
