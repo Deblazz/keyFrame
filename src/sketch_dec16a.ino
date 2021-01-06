@@ -70,8 +70,9 @@ void setup() {
     */
     String data = "";
     int contaFile = 1;
-    char name[10] ={0};
-    myFile = SD.open("1.txt", FILE_WRITE);
+    char name[20] ={0};
+    SD.mkdir("input");
+    myFile = SD.open("/input/1.txt", FILE_WRITE);
     while(Serial.available() > 0){
       data = "";
 
@@ -81,11 +82,13 @@ void setup() {
       myFile.close();
       if(Serial.available() > 4){
       contaFile++;
-      sprintf(name, "%d.txt", contaFile);
+      sprintf(name, "/input/%d.txt", contaFile);
       myFile = SD.open(name, FILE_WRITE);
       }
-      Keyboard.println("setxkbmap it");
     }
+      Keyboard.println("setxkbmap it");
+      delay(200);
+      Keyboard.println("exit");
   }
   else{
     Serial.println("Errore");
